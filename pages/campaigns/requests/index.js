@@ -10,6 +10,7 @@ class RequestIndex extends Component {
         const {address} = props.query;
         const campaign = Campaign(address);
         const requestCount = await campaign.methods.getRequestCount().call();
+        const approversCount = await campaign.methods.approversCount().call();
 
         const requests = await Promise.all(
             Array(parseInt(requestCount)).fill().map((element,index)=>{
@@ -18,7 +19,7 @@ class RequestIndex extends Component {
         ); // We do this because in solidity we can not fetch an array of requests (array of structures)
 
 
-        return {address,requests,requestCount}
+        return {address,requests,requestCount,approversCount}
     }
 
     renderRows(){
@@ -28,7 +29,8 @@ class RequestIndex extends Component {
             key={index}
             id={index}
             request={request}
-            address={this.props.address}/>
+            address={this.props.address}
+            approversCount={this.props.approversCount}/>
             )
         })
     }
@@ -40,7 +42,7 @@ class RequestIndex extends Component {
                 <h3>Requests</h3>
                 <Link route={`/campaigns/${this.props.address}/requests/new`}>
                     <a>
-                        <Button primary>Add Request</Button>
+                        <Button floated='right' style={{marginBottom:10}} primary>Add Request</Button>
                     </a>
                 </Link>
                 <Table>
@@ -59,6 +61,7 @@ class RequestIndex extends Component {
                         {this.renderRows()}
                     </Body>
                 </Table>
+                <div>Found {this.props.requestCount} requests</div>
             </Layout>
         )
     }
